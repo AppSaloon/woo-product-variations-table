@@ -1,0 +1,42 @@
+{
+  "attributes": {
+    "d": [
+      1,
+      2,
+      3
+    ],
+    "length": [
+      2,
+      3,
+      4
+    ],
+    "color": [
+      "black",
+      2,
+      4
+    ]
+  },
+  "seletectedAttributes": {
+    "d": 1,
+    "length": 2,
+    "color": null
+  },
+  "variations": [
+    {
+      "id": 13,
+      "data": {
+        "d": 1,
+        "length": 2,
+        "color": "black"
+      }
+    }
+  ],
+  "currentPage": "1",
+  "totalPage": "5",
+  "url": "blabla.com/variations-table?product_id=123",
+  "queryParameters": {
+    "d": "attribute_d",
+    "length": "attribute_length",
+    "color": "attribute_color"
+  }
+}
