@@ -75,6 +75,7 @@ class Premium_Plugin_Controller {
         $ioc_container->container->get('plugin_config')->register_plugin_settings();
         $ioc_container->container->get('variation_table_config')->register_variation_table();
         $ioc_container->container->get('rest_endpoint_config')->register_routes();
+        $ioc_container->container->get('show_product_variations_table')->register_product_variations_table();
     }
 
 }

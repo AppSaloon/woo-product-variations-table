@@ -72,6 +72,8 @@ Final class Ioc_Container implements Ioc_Container_Interface {
 		$this->set_variation_table();
 
 		$this->set_endpoint_config();
+
+		$this->set_table_for_product_variations();
 	}
 
 	/**
@@ -109,5 +111,14 @@ Final class Ioc_Container implements Ioc_Container_Interface {
 	 */
 	public function set_endpoint_config() {
 		$this->container->set( 'rest_endpoint_config', DI\object( 'woo_pvt\config\Rest_Endpoint_Config' ) );
+	}
+
+	/**
+	 * Set set_table_for_product_variations
+	 *
+	 * @since 1.0.0
+	 */
+	public function set_table_for_product_variations() {
+		$this->container->set( 'show_product_variations_table', DI\object( 'woo_pvt\config\Show_Product_Variations_Table' ) );
 	}
 }
