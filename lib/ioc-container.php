@@ -62,8 +62,8 @@ Final class Ioc_Container implements Ioc_Container_Interface {
 	 */
 	public function build_container() {
 		$this->builder->addDefinitions( [
-            'settings'   => DI\object( 'woo_pvt\model\Settings' )
-        ] );
+			'settings'      => DI\object( 'woo_pvt\model\Settings' ),
+		] );
 
 		$this->container = $this->builder->build();
 
@@ -71,6 +71,7 @@ Final class Ioc_Container implements Ioc_Container_Interface {
 
 		$this->set_variation_table();
 
+		$this->set_endpoint_config();
 	}
 
 	/**
@@ -79,23 +80,34 @@ Final class Ioc_Container implements Ioc_Container_Interface {
 	 * @since 1.0.0
 	 */
 	public function set_plugin_config() {
-		$this->container->set( 'plugin_config', DI\object( 'woo_pvt\config\Plugin_Config' )
-			->constructor(
-				$this->container->get( 'settings' )
-			)
+		$this->container->set( 'plugin_config',
+			DI\object( 'woo_pvt\config\Plugin_Config' )
+				->constructor(
+					$this->container->get( 'settings' )
+				)
 		);
 	}
 
-    /**
-     * Set Variation table
-     *
-     * @since 1.0.0
-     */
-    public function set_variation_table() {
-        $this->container->set( 'variation_table_config', DI\object( 'woo_pvt\config\Variation_Table_Config' )
-            ->constructor(
-                $this->container->get( 'settings' )
-            )
-        );
-    }
+	/**
+	 * Set Variation table
+	 *
+	 * @since 1.0.0
+	 */
+	public function set_variation_table() {
+		$this->container->set( 'variation_table_config',
+			DI\object( 'woo_pvt\config\Variation_Table_Config' )
+				->constructor(
+					$this->container->get( 'settings' )
+				)
+		);
+	}
+
+	/**
+	 * Set Endpoint Config
+	 *
+	 * @since 1.0.0
+	 */
+	public function set_endpoint_config() {
+		$this->container->set( 'rest_endpoint_config', DI\object( 'woo_pvt\config\Rest_Endpoint_Config' ) );
+	}
 }

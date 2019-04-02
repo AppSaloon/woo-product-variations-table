@@ -7,6 +7,11 @@ Author: AppSaloon
 Author URI: https://appsaloon.be
 Text Domain: woo-product-variations-table
 Domain Path: /languages/
+Tags: woocommerce, product variations, list of product variations, filter product variations
+Requires PHP: 7.0
+Requires at least: 5.0
+Tested up to: 5.1.1
+Stable tag: 1.0.0
 Version: 1.0.0
 */
 
@@ -30,6 +35,11 @@ define( 'WOO_PVT_BASE_NAME', dirname( plugin_basename( __FILE__ ) ) );
  * Plugin version
  */
 define( 'WOO_PVT_VERSION', '1.0.0' );
+
+/**
+ * Rest API namespace
+ */
+define( 'WOO_PVT_REST_API_NAMESPACE', 'woo-pvt' );
 
 /**
  * Register autoloader to load files/classes dynamically
@@ -64,6 +74,7 @@ class Premium_Plugin_Controller {
     public function __construct( Ioc_Container_Interface $ioc_container ) {
         $ioc_container->container->get('plugin_config')->register_plugin_settings();
         $ioc_container->container->get('variation_table_config')->register_variation_table();
+        $ioc_container->container->get('rest_endpoint_config')->register_routes();
     }
 
 }
