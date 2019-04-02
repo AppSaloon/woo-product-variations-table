@@ -73,7 +73,7 @@ class Product {
 
 		$this->filterAttributes = $filterAttributes;
 		$this->currentPage      = $currentPage;
-		$this->perPage          = 15;
+		$this->perPage          = get_option( 'woo_product_variations_per_page', 15 );
 
 		$this->attributes = $this->productQuery->queryAttributesUsedByVariations( $this->product->get_id() );
 
@@ -121,11 +121,12 @@ class Product {
 	 */
 	public function getJson() {
 		return array(
-			'attributes'  => $this->attributes,
-			'variations'  => $this->variations,
-			'currentPage' => $this->currentPage,
-			'totalPage'   => floor( $this->totalVariations / $this->perPage ),
-			'url'         => home_url() . DIRECTORY_SEPARATOR . 'wp-json' . DIRECTORY_SEPARATOR . Rest_Endpoint_Config::NAMESPACE . '/product/' . $this->product->get_id(),
+			'attributes'     => $this->attributes,
+			'variations'     => $this->variations,
+			'currentPage'    => $this->currentPage,
+			'totalPage'      => floor( $this->totalVariations / $this->perPage ),
+			'url'            => home_url() . DIRECTORY_SEPARATOR . 'wp-json' . DIRECTORY_SEPARATOR . Rest_Endpoint_Config::NAMESPACE . '/product/' . $this->product->get_id(),
+			'showAttributes' => (get_option( 'woo_product_variations_table_show_attributes', false ) == '1') ? true : false,
 		);
 	}
 }
