@@ -125,8 +125,19 @@ class Product {
 			'variations'     => $this->variations,
 			'currentPage'    => $this->currentPage,
 			'totalPage'      => floor( $this->totalVariations / $this->perPage ),
-			'url'            => home_url() . DIRECTORY_SEPARATOR . 'wp-json' . DIRECTORY_SEPARATOR . Rest_Endpoint_Config::NAMESPACE . '/product/' . $this->product->get_id(),
+			'url'            => static::getApiEndpoint() . $this->product->get_id(),
 			'showAttributes' => (get_option( 'woo_product_variations_table_show_attributes', false ) == '1') ? true : false,
 		);
+	}
+
+	/**
+	 * returns api endpoint
+	 *
+	 * @return string
+	 *
+	 * @since 1.0.0
+	 */
+	public static function getApiEndpoint() {
+		return home_url() . DIRECTORY_SEPARATOR . 'wp-json' . DIRECTORY_SEPARATOR . Rest_Endpoint_Config::NAMESPACE . '/product/';
 	}
 }
