@@ -29,6 +29,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 define( 'WOO_PVT_DIR', __DIR__ . DIRECTORY_SEPARATOR );
 
+define( 'WOO_PVT_URL', plugin_dir_url( __FILE__ ) );
+
 define( 'WOO_PVT_BASE_NAME', dirname( plugin_basename( __FILE__ ) ) );
 
 /**
