@@ -125,7 +125,6 @@ class Product {
 			'variations'     => $this->variations,
 			'currentPage'    => $this->currentPage,
 			'totalPages'      => floor( $this->totalVariations / $this->perPage ),
-			'url'            => static::getApiEndpoint() . $this->product->get_id(),
 			'showAttributes' => (get_option( 'woo_product_variations_table_show_attributes', false ) == '1') ? true : false,
 		);
 	}
