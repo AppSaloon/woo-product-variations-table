@@ -33,6 +33,13 @@ class Product_Query {
 		$attributesLabel = $this->queryAttributesLabel( $usedAttributes );
 
 		foreach ( $attributesName as $slug => $value ) {
+
+			foreach ( $value as $k => $v ) {
+				if ( ! in_array( $k, $usedAttributes[ $slug ] ) ) {
+					unset( $value[$k] );
+				}
+			}
+
 			$attributes[ $slug ] = array(
 				'label'  => $attributesLabel[ $slug ],
 				'values' => $value,
