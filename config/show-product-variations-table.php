@@ -90,18 +90,19 @@ class Show_Product_Variations_Table {
 
 	public function show_product_variations() {
 		global $product;
-		$productId   = $product->get_id();
-		$transientId = "product-variations-inital-data-".$productId;
+		$productId          = $product->get_id();
+		$transientId        = "product-variations-inital-data-" . $productId;
+		$initialDataEncoded = get_transient( $transientId );
 
-		if( $initialDataEncoded = get_transient( $transientId ) === false ) {
+		if ( $initialDataEncoded === false ) {
 			$initialData = ( new Product( new Product_Query() ) )
 				->setProduct( $product )
 				->getProducVariationsByFilter()
 				->getJson();
 
-			$initialDataEncoded = base64_encode(json_encode($initialData));
+			$initialDataEncoded = base64_encode( json_encode( $initialData ) );
 
-			set_transient( $transientId, $initialDataEncoded, 60 * 60);
+			set_transient( $transientId, $initialDataEncoded, 60 * 60 );
 		}
 
 		$apiEndPoint = Product::getApiEndpoint() . $productId;
