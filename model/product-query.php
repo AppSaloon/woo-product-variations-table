@@ -99,7 +99,7 @@ class Product_Query {
 
 		$attributes_string = implode( "','", $attributes );
 
-		$query = "SELECT {$this->wpdb->term_taxonomy}.taxonomy, {$this->wpdb->terms}.name, {$this->wpdb->terms}.slug
+		$query = "SELECT {$this->wpdb->term_taxonomy}.taxonomy, replace({$this->wpdb->terms}.name, ',', '.') as name, {$this->wpdb->terms}.slug
 				  FROM {$this->wpdb->term_taxonomy}
 				  INNER JOIN {$this->wpdb->terms}
 				  	ON {$this->wpdb->terms}.term_id = {$this->wpdb->term_taxonomy}.term_id
