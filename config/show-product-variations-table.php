@@ -3,6 +3,7 @@
 namespace woo_pvt\config;
 
 use woo_pvt\model\Product;
+use woo_pvt\model\Product_Query;
 
 class Show_Product_Variations_Table {
 
@@ -90,7 +91,15 @@ class Show_Product_Variations_Table {
 	public function show_product_variations() {
 		global $product;
 		$productId   = $product->get_id();
+		$initialData = ( new Product( new Product_Query() ) )
+			->setProduct( $product )
+			->getProducVariationsByFilter()
+			->getJson();
+
+		$initialDataEncoded = base64_encode(json_encode($initialData));
+
 		$apiEndPoint = Product::getApiEndpoint() . $productId;
-		echo "<div id='variations-table' class='variations-table' data-add-to-cart-url='/wp/wp-admin/admin-ajax.php?add_variation_to_cart=1' data-api-endpoint='" . $apiEndPoint . "' data-product-id='" . $productId . "' >test</div>";
+
+		echo "<div id='variations-table' class='variations-table' data-initial-data='" . $initialDataEncoded . "' data-add-to-cart-url='/wp/wp-admin/admin-ajax.php?add_variation_to_cart=1' data-api-endpoint='" . $apiEndPoint . "' data-product-id='" . $productId . "' >test</div>";
 	}
 }
