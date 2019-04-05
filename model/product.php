@@ -128,7 +128,7 @@ class Product {
 			'variations'     => $this->variations,
 			'currentPage'    => $this->currentPage,
 			'totalPages'     => floor( $this->totalVariations / $this->perPage ),
-			'showAttributes' => ( get_option( 'woo_product_variations_table_show_attributes',
+			'showFilter' => ( get_option( 'woo_product_variations_table_show_attributes',
 					false ) == '1' )
 				? true
 				: false,

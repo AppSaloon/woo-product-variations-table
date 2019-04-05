@@ -60,7 +60,7 @@ class Plugin_Config
                         </td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><?php echo __( 'Show Attributes', 'woo-product-variations-table' ); ?></th>
+                        <th scope="row"><?php echo __( 'Show variation filter', 'woo-product-variations-table' ); ?></th>
                         <td>
                             <ul style="margin-top: 5px;" class='mnt-checklist' id='woo-product-variations-table-attributes'>
                                 <li>
