@@ -92,6 +92,9 @@ class Product {
 			$this->perPage
 		);
 
+		// update attributes with attribute name and slug
+		$this->attributes = $this->productQuery->getAttributesForEndpoint( $this->attributes );
+
 		return $this;
 	}
 
@@ -122,12 +125,13 @@ class Product {
 	public function getJson() {
 		return array(
 			'attributes'     => $this->attributes,
-			'attributesName' => $this->productQuery->queryAttributesName($this->attributes),
-			'attributesLabel' => $this->productQuery->queryAttributesLabel($this->attributes),
 			'variations'     => $this->variations,
 			'currentPage'    => $this->currentPage,
-			'totalPages'      => floor( $this->totalVariations / $this->perPage ),
-			'showAttributes' => (get_option( 'woo_product_variations_table_show_attributes', false ) == '1') ? true : false,
+			'totalPages'     => floor( $this->totalVariations / $this->perPage ),
+			'showAttributes' => ( get_option( 'woo_product_variations_table_show_attributes',
+					false ) == '1' )
+				? true
+				: false,
 		);
 	}
 

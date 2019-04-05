@@ -18,6 +18,31 @@ class Product_Query {
 	}
 
 	/**
+	 * Merges attribute slugs with names
+	 *
+	 * @param $usedAttributes
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.0
+	 */
+	public function getAttributesForEndpoint( $usedAttributes ) {
+		$attributes = array();
+
+		$attributesName  = $this->queryAttributesName( $usedAttributes );
+		$attributesLabel = $this->queryAttributesLabel( $usedAttributes );
+
+		foreach ( $attributesName as $slug => $value ) {
+			$attributes[ $slug ] = array(
+				'label'  => $attributesLabel[ $slug ],
+				'values' => $value,
+			);
+		}
+
+		return $attributes;
+	}
+
+	/**
 	 * Retrieves attributes used by the variations
 	 *
 	 * @param $productId integer
