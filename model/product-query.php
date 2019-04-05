@@ -53,6 +53,69 @@ class Product_Query {
 	}
 
 	/**
+	 * Returns attributes name
+	 *
+	 * @param $attributes
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.0
+	 */
+	public function queryAttributesName( $attributes ) {
+		$attributes = array_keys( $attributes );
+		$attributes = str_replace( 'attribute_', '', $attributes );
+
+		$attributes_string = implode( "','", $attributes );
+
+		$query = "SELECT {$this->wpdb->term_taxonomy}.taxonomy, {$this->wpdb->terms}.name, {$this->wpdb->terms}.slug
+				  FROM {$this->wpdb->term_taxonomy}
+				  INNER JOIN {$this->wpdb->terms}
+				  	ON {$this->wpdb->terms}.term_id = {$this->wpdb->term_taxonomy}.term_id
+				  WHERE taxonomy in ('{$attributes_string}')
+				  ORDER BY {$this->wpdb->term_taxonomy}.taxonomy";
+
+		$result = $this->wpdb->get_results( $query, ARRAY_A );
+
+		$attributesName = array();
+
+		foreach ( $result as $term ) {
+			$attributesName[ 'attribute_' . $term['taxonomy'] ][ $term['slug'] ] = $term['name'];
+		}
+
+		return $attributesName;
+	}
+
+	/**
+	 * Returns attributes label
+	 *
+	 * @param $attributes
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.0
+	 */
+	public function queryAttributesLabel( $attributes ) {
+		$attributes = array_keys( $attributes );
+		$attributes = str_replace( 'attribute_pa_', '', $attributes );
+
+		$attributes_string = implode( "','", $attributes );
+
+		$query = "SELECT attribute_name, attribute_label
+				  FROM {$this->wpdb->prefix}woocommerce_attribute_taxonomies
+				  WHERE attribute_name in ('{$attributes_string}')";
+
+		$result = $this->wpdb->get_results( $query, ARRAY_A );
+
+		$labels = array();
+
+		foreach ( $result as $taxonomies ) {
+			$labels[ 'attribute_pa_' . $taxonomies['attribute_name'] ] = $taxonomies['attribute_label'];
+		}
+
+		return $labels;
+	}
+
+	/**
 	 * Retrieve filtered variations
 	 *
 	 * @param $productId

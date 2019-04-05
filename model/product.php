@@ -122,6 +122,8 @@ class Product {
 	public function getJson() {
 		return array(
 			'attributes'     => $this->attributes,
+			'attributesName' => $this->productQuery->queryAttributesName($this->attributes),
+			'attributesLabel' => $this->productQuery->queryAttributesLabel($this->attributes),
 			'variations'     => $this->variations,
 			'currentPage'    => $this->currentPage,
 			'totalPages'      => floor( $this->totalVariations / $this->perPage ),
