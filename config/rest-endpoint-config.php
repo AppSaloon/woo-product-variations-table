@@ -86,8 +86,7 @@ class Rest_Endpoint_Config extends \WP_REST_Controller {
 
 		$container = Ioc_Container::getInstance();
 
-		$response_data = ( new Product( new Product_Query() ) )
-			->setProduct( $product )
+		$response_data = ( new Product( new Product_Query( $product ) ) )
 			->getProducVariationsByFilter( $attributes, $currentPage )
 			->getJson();
 

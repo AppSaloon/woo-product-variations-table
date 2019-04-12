@@ -6,59 +6,33 @@ use woo_pvt\config\Rest_Endpoint_Config;
 
 class Product {
 
-	/**
-	 * @var \WC_Product_Variable
-	 */
-	public $product;
-
-	/**
-	 * @var array Attributes used by the product variations
-	 */
+	/** @var array Attributes used by the product variations */
 	private $attributes = array();
 
-	/**
-	 * @var array Products
-	 */
+	/** @var array Products */
 	private $variations = array();
 
-	/**
-	 * @var int Total variations in the product
-	 */
+	/** @var int Total variations in the product */
 	private $totalVariations = 0;
 
-	/**
-	 * @var int Current page
-	 */
+	/** @var int Current page */
 	private $currentPage = 1;
 
-	/**
-	 * @var int Products per page
-	 */
+	/** @var int Products per page * */
 	private $perPage = 15;
 
-	/**
-	 * @var Product_Query Queries to get the data from the database
-	 */
+	/** @var array Attributes order */
+	private $attributesOrder = array();
+
+	/** @var Product_Query Queries to get the data from the database */
 	protected $productQuery;
 
-	/**
-	 * @var array Attributes to filter the variations
-	 */
+	/** @var array Attributes to filter the variations */
 	private $filterAttributes = array();
 
+	/** Product constructor */
 	public function __construct( Product_Query $product_query ) {
 		$this->productQuery = $product_query;
-	}
-
-	/**
-	 * @param $product
-	 *
-	 * @return $this
-	 */
-	public function setProduct( $product ) {
-		$this->product = $product;
-
-		return $this;
 	}
 
 	/**
@@ -75,27 +49,45 @@ class Product {
 		$this->currentPage      = $currentPage;
 		$this->perPage          = get_option( 'woo_product_variations_per_page', 15 );
 
-		$this->attributes = $this->productQuery->queryAttributesUsedByVariations( $this->product->get_id() );
-
+		// get total variations
 		$this->totalVariations = $this->productQuery->queryTotalVariations(
-			$this->product->get_id(),
 			$filterAttributes
 		);
 
-		$variationsAttributes = $this->mergeAttributes( $filterAttributes );
+		$this->calculateAttributes();
+
+		$variationsAttributes = $this->mergeAttributes( $filterAttributes, true );
 
 		// calculate better with less database queries
 		$this->variations = $this->productQuery->queryVariationsByFilter(
-			$this->product->get_id(),
 			$variationsAttributes,
+			$this->attributesOrder,
 			$this->currentPage,
 			$this->perPage
 		);
 
+		return $this;
+	}
+
+	/**
+	 * Calculate attributes
+	 *
+	 * @since 1.0.0
+	 */
+	private function calculateAttributes() {
+		// get attributes order from the product
+		$this->attributesOrder = $this->productQuery->queryAttributesOrder();
+
+		// get used attributes
+		$this->attributes = $this->productQuery->queryAttributesUsedByVariations();
+
 		// update attributes with attribute name and slug
 		$this->attributes = $this->productQuery->getAttributesForEndpoint( $this->attributes );
 
-		return $this;
+		// sort attributes
+		if ( is_array( $this->attributesOrder ) ) {
+			$this->attributes = $this->mergeAttributes( $this->attributesOrder );
+		}
 	}
 
 	/**
@@ -105,11 +97,21 @@ class Product {
 	 *
 	 * @since 1.0.0
 	 */
-	private function mergeAttributes( $filterAttributes ) {
+	private function mergeAttributes( $filterAttributes, $filter = false ) {
+
 		foreach ( $this->attributes as $attribute => $values ) {
+
 			if ( ! isset( $filterAttributes[ $attribute ] ) ) {
 				$filterAttributes[ $attribute ] = false;
+				continue;
 			}
+
+			/** Do not run for the queryVariationsByFilter */
+			if( $filter ) {
+				continue;
+			}
+
+			$filterAttributes[ $attribute ] = $values;
 		}
 
 		return $filterAttributes;
@@ -124,11 +126,11 @@ class Product {
 	 */
 	public function getJson() {
 		return array(
-			'attributes'     => $this->attributes,
-			'variations'     => $this->variations,
-			'currentPage'    => $this->currentPage,
-			'totalPages'     => floor( $this->totalVariations / $this->perPage ),
-			'showFilter' => ( get_option( 'woo_product_variations_table_show_attributes',
+			'attributes'  => $this->attributes,
+			'variations'  => $this->variations,
+			'currentPage' => $this->currentPage,
+			'totalPages'  => floor( $this->totalVariations / $this->perPage ),
+			'showFilter'  => ( get_option( 'woo_product_variations_table_show_attributes',
 					false ) == '1' )
 				? true
 				: false,

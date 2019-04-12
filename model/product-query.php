@@ -6,15 +6,17 @@ use woo_pvt\config\Rest_Endpoint_Config;
 
 class Product_Query {
 
-	/**
-	 * @var \wpdb
-	 */
+	/** @var \wpdb */
 	private $wpdb;
 
-	public function __construct() {
+	/** @var \WC_Product */
+	public $product;
+
+	public function __construct( \WC_Product $product ) {
 		global $wpdb;
 
-		$this->wpdb = $wpdb;
+		$this->wpdb    = $wpdb;
+		$this->product = $product;
 	}
 
 	/**
@@ -36,7 +38,7 @@ class Product_Query {
 
 			foreach ( $value as $k => $v ) {
 				if ( ! in_array( $k, $usedAttributes[ $slug ] ) ) {
-					unset( $value[$k] );
+					unset( $value[ $k ] );
 				}
 			}
 
@@ -52,13 +54,11 @@ class Product_Query {
 	/**
 	 * Retrieves attributes used by the variations
 	 *
-	 * @param $productId integer
-	 *
 	 * @return array
 	 *
 	 * @since 1.0.0
 	 */
-	public function queryAttributesUsedByVariations( $productId ) {
+	public function queryAttributesUsedByVariations() {
 		$attributes = array();
 
 		$query = "SELECT DISTINCT(meta_key), GROUP_CONCAT(distinct(meta_value)) as terms
@@ -66,7 +66,7 @@ class Product_Query {
 				  WHERE post_id IN (
 				  	SELECT ID 
 				  	FROM {$this->wpdb->posts} 
-				  	WHERE post_parent = '{$productId}' 
+				  	WHERE post_parent = '{$this->product->get_id()}' 
 				  	AND post_type='product_variation'
 				  	)
 				  AND meta_key LIKE 'attribute_%'
@@ -150,7 +150,6 @@ class Product_Query {
 	/**
 	 * Retrieve filtered variations
 	 *
-	 * @param $productId
 	 * @param $filterAttributes
 	 * @param $currentPage
 	 * @param $perPage
@@ -159,30 +158,51 @@ class Product_Query {
 	 *
 	 * @since 1.0.0
 	 */
-	public function queryVariationsByFilter( $productId, $filterAttributes, $currentPage, $perPage ) {
+	public function queryVariationsByFilter( $filterAttributes, $attributesOrder, $currentPage, $perPage ) {
 		$query = "SELECT ID" . $this->select_filter_attributes( $filterAttributes ) . "
 				  FROM " . $this->wpdb->posts . "
 				  " . $this->inner_join_filter_attributes( $filterAttributes ) . "
-				  WHERE post_parent = " . $productId . " 
-				  AND post_type='product_variation'
-				  " . $this->limit( $currentPage, $perPage );
+				  WHERE post_parent = " . $this->product->get_id() . " 
+				  AND post_type='product_variation' "
+		         . $this->sort( $attributesOrder )
+		         . $this->limit( $currentPage, $perPage );
 
 		return $this->wpdb->get_results( $query ) ?? array();
 	}
 
 	/**
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	public function queryAttributesOrder() {
+		$keys = $this->product->get_attributes();
+
+		if ( is_array( $keys ) ) {
+			foreach ( $keys as $k => $v ) {
+				$keys[ 'attribute_' . $k ] = array();
+				unset( $keys[ $k ] );
+			}
+		}
+
+
+		return $keys;
+	}
+
+	/**
 	 * Query total of variations matched with the filter
 	 *
-	 * @param $productId
 	 * @param $filterAttributes
 	 *
 	 * @return int
+	 *
+	 * @since 1.0.0
 	 */
-	public function queryTotalVariations( $productId, $filterAttributes ) {
+	public function queryTotalVariations( $filterAttributes ) {
 		$query = "SELECT count(*) as max
 				  FROM " . $this->wpdb->posts . "
 				  " . $this->inner_join_filter_attributes( $filterAttributes ) . "
-				  WHERE post_parent = " . $productId . " 
+				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation'";
 
 		$result = $this->wpdb->get_row( $query );
@@ -235,6 +255,41 @@ class Product_Query {
 	}
 
 	/**
+	 * Sorts variations by the attribute values
+	 *
+	 * @param $filterAttributes
+	 *
+	 * @return string
+	 *
+	 * @since 1.0.0
+	 */
+	private function sort( $filterAttributes ) {
+		$decimal = array(
+			'attribute_pa_d',
+			'attribute_pa_h',
+			'attribute_pa_h1',
+			'attribute_pa_wallthickness',
+		);
+
+		$sort = " ORDER BY  ";
+
+		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
+			if ( in_array( $attribute_key, $decimal ) ) {
+				$sort .= "CAST(table_{$attribute_key}.meta_value as DECIMAL),";
+			} else {
+				$sort .= "table_{$attribute_key}.meta_value,";
+			}
+
+		}
+
+		$sort = substr( $sort, 0, - 1 );
+
+		$sort .= " DESC ";
+
+		return $sort;
+	}
+
+	/**
 	 * Limit variations to have performance gain
 	 *
 	 * @param $currentPage
@@ -251,6 +306,6 @@ class Product_Query {
 			$start = $currentPage * $perPage;
 		}
 
-		return "LIMIT $start,$perPage";
+		return " LIMIT $start,$perPage";
 	}
 }
