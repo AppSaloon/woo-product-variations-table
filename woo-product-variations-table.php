@@ -12,7 +12,7 @@ Requires PHP: 7.0
 Requires at least: 5.0
 Tested up to: 5.1.1
 Stable tag: 1.0.1
-Version: 1.0.0
+Version: 1.0.1
 */
 
 namespace woo_pvt;
