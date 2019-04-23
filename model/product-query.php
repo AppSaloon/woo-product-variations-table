@@ -257,13 +257,18 @@ class Product_Query {
 	/**
 	 * Sorts variations by the attribute values
 	 *
-	 * @param $filterAttributes
+	 * @param array $filterAttributes
 	 *
 	 * @return string
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.1
 	 */
-	private function sort( $filterAttributes ) {
+	private function sort( array $filterAttributes ) {
+		if( count( $filterAttributes ) == 0 ) {
+			return '';
+		}
+
 		$decimal = array(
 			'attribute_pa_d',
 			'attribute_pa_h',

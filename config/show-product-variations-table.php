@@ -74,6 +74,9 @@ class Show_Product_Variations_Table {
 		die();
 	}
 
+	/**
+	 *
+	 */
 	public function variations_table_scripts() {
 		if ( is_product() ) {
 			wp_enqueue_script( 'woo-product-variations-table-style',
@@ -88,15 +91,27 @@ class Show_Product_Variations_Table {
 		}
 	}
 
+	/**
+	 * Show variations for only variable products.
+	 *
+	 * @return bool
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.1
+	 */
 	public function show_product_variations() {
 		global $product;
+
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
 		$productId          = $product->get_id();
 		$transientId        = "product-variations-inital-data-" . $productId;
 		$initialDataEncoded = get_transient( $transientId );
 
 		if ( $initialDataEncoded === false ) {
-			$initialData = ( new Product( new Product_Query() ) )
-				->setProduct( $product )
+			$initialData = ( new Product( new Product_Query( $product ) ) )
 				->getProducVariationsByFilter()
 				->getJson();
 
