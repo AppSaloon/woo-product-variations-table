@@ -27,6 +27,7 @@ class Product_Query {
 	 * @return array
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.3
 	 */
 	public function getAttributesForEndpoint( $usedAttributes ) {
 		$attributes = array();
@@ -37,7 +38,7 @@ class Product_Query {
 		foreach ( $attributesName as $slug => $value ) {
 
 			foreach ( $value as $k => $v ) {
-				if ( ! in_array( $k, $usedAttributes[ $slug ] ) ) {
+				if ( ! in_array( (string) $k, $usedAttributes[ $slug ] ) ) {
 					unset( $value[ $k ] );
 				}
 			}
