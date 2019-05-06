@@ -30,35 +30,46 @@ class Product {
 	/** @var array Attributes to filter the variations */
 	private $filterAttributes = array();
 
+	/** @var array Used attributes */
+	private $usedAttributes = array();
+
+	/** @var bool Keeps the state if the filter is used */
+	private $hasFilter = false;
+
 	/** Product constructor */
 	public function __construct( Product_Query $product_query ) {
 		$this->productQuery = $product_query;
 	}
 
 	/**
-	 * @param array $filter_attributes
+	 * @param array $filterAttributes
 	 * @param int $currentPage
 	 *
 	 * @return $this
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.2
 	 */
 	public function getProducVariationsByFilter( $filterAttributes = array(), $currentPage = 1 ) {
-
 		$this->filterAttributes = $filterAttributes;
 		$this->currentPage      = $currentPage;
 		$this->perPage          = get_option( 'woo_product_variations_per_page', 15 );
 
-		// get total variations
+		/** @var  boolean hasFilter Check if the filter is used */
+		$this->hasFilter = ( count( $filterAttributes ) !== 0 ) ? true : false;
+
+		/** get total matched variations **/
 		$this->totalVariations = $this->productQuery->queryTotalVariations(
 			$filterAttributes
 		);
 
+		/** Get the attributes for the product */
 		$this->calculateAttributes();
 
+		/** @var  $variationsAttributes */
 		$variationsAttributes = $this->mergeAttributes( $filterAttributes, true );
 
-		// calculate better with less database queries
+		/** Get the matched variations **/
 		$this->variations = $this->productQuery->queryVariationsByFilter(
 			$variationsAttributes,
 			$this->attributesOrder,
@@ -66,6 +77,7 @@ class Product {
 			$this->perPage
 		);
 
+		/** Return this object */
 		return $this;
 	}
 
@@ -73,18 +85,24 @@ class Product {
 	 * Calculate attributes
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.2
 	 */
 	private function calculateAttributes() {
-		// get attributes order from the product
+		/** get attributes order from the product model -> defined in the product backend **/
 		$this->attributesOrder = $this->productQuery->queryAttributesOrder();
 
-		// get used attributes
-		$this->attributes = $this->productQuery->queryAttributesUsedByVariations();
+		/** get used attributes - without filtering */
+		$this->usedAttributes = $this->productQuery->queryAttributesUsedByVariations();
 
-		// update attributes with attribute name and slug
-		$this->attributes = $this->productQuery->getAttributesForEndpoint( $this->attributes );
+		/** filters the attributes with available attributes - with filtering */
+		if ( $this->hasFilter ) {
+			$this->usedAttributes = $this->productQuery->queryAttributesUsedByVariationsAndFilter( $this->usedAttributes, $this->filterAttributes );
+		}
 
-		// sort attributes
+		/** update attributes with attribute name and slug */
+		$this->attributes = $this->productQuery->getAttributesForEndpoint( $this->usedAttributes );
+
+		/** sort attributes - like the order in the product backend */
 		if ( is_array( $this->attributesOrder ) ) {
 			$this->attributes = $this->mergeAttributes( $this->attributesOrder );
 		}
@@ -107,7 +125,7 @@ class Product {
 			}
 
 			/** Do not run for the queryVariationsByFilter */
-			if( $filter ) {
+			if ( $filter ) {
 				continue;
 			}
 
@@ -126,14 +144,14 @@ class Product {
 	 */
 	public function getJson() {
 		return array(
-			'attributes'  => $this->attributes,
-			'variations'  => $this->variations,
-			'currentPage' => $this->currentPage,
-			'totalPages'  => floor( $this->totalVariations / $this->perPage ),
-			'showFilter'  => ( get_option( 'woo_product_variations_table_show_attributes',
+			'attributes'     => $this->attributes,
+			'variations'     => $this->variations,
+			'currentPage'    => $this->currentPage,
+			'totalPages'     => ceil( $this->totalVariations / $this->perPage ),
+			'showFilter'     => ( get_option( 'woo_product_variations_table_show_attributes',
 					false ) == '1' )
 				? true
-				: false,
+				: false
 		);
 	}
 

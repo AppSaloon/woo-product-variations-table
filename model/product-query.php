@@ -85,6 +85,40 @@ class Product_Query {
 	}
 
 	/**
+	 * Filters the attributes
+	 *
+	 * @param $attributes
+	 * @param array $filterAttributes
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.2
+	 */
+	public function queryAttributesUsedByVariationsAndFilter( $attributes, $filterAttributes = array() ) {
+		$innerJoinArray = array_merge( $attributes, $filterAttributes );
+
+		$query = "SELECT " . $this->select_group_concat_filter_attributes( $attributes ) . "
+				  FROM " . $this->wpdb->posts . "
+				  " . $this->inner_join_filter_attributes( $innerJoinArray ) . "
+				  WHERE post_parent = " . $this->product->get_id() . " 
+				  AND post_type='product_variation' ";
+
+		$result = $this->wpdb->get_results( $query, ARRAY_A );
+
+		if ( sizeof( $result ) == 0 ) {
+			new \ErrorException( 'There was a problem during filtering the attributes', 500 );
+		}
+
+		$attributes = array();
+
+		foreach ( $result[0] as $key => $row ) {
+			$attributes[ $key ] = explode( ',', $row );
+		}
+
+		return $attributes;
+	}
+
+	/**
 	 * Returns attributes name
 	 *
 	 * @param $attributes
@@ -230,6 +264,25 @@ class Product_Query {
 	}
 
 	/**
+	 * Build select listing for the filter attributes
+	 *
+	 * @param $filterAttributes array
+	 *
+	 * @return string
+	 *
+	 * @since 1.0.0
+	 */
+	private function select_group_concat_filter_attributes( $filterAttributes ) {
+		$select = '';
+
+		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
+			$select .= "GROUP_CONCAT( DISTINCT( table_$attribute_key.meta_value ) ) as $attribute_key, ";
+		}
+
+		return substr( $select, 0, - 2 );
+	}
+
+	/**
 	 * Add attributes to FROM QUERY
 	 *
 	 * @param $filterAttributes array
@@ -246,7 +299,7 @@ class Product_Query {
 			ON table_$attribute_key.post_id = ID 
 			AND table_$attribute_key.meta_key = '" . $attribute_key . "' ";
 
-			if ( $attribute_value !== false ) {
+			if ( $attribute_value !== false && ! is_array( $attribute_value ) ) {
 				$inner_join .= "AND table_$attribute_key.meta_value = '" . $attribute_value . "' ";
 			}
 		}
@@ -265,7 +318,7 @@ class Product_Query {
 	 * @version 1.0.1
 	 */
 	private function sort( array $filterAttributes ) {
-		if( count( $filterAttributes ) == 0 ) {
+		if ( count( $filterAttributes ) == 0 ) {
 			return '';
 		}
 

@@ -70,6 +70,7 @@ class Rest_Endpoint_Config extends \WP_REST_Controller {
 	 * @return \WP_REST_Response|\WP_Error
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.2
 	 */
 	public function get_item( $request ) {
 		$product = wc_get_product( (int) $request->get_param( 'product_id' ) );
@@ -83,8 +84,6 @@ class Rest_Endpoint_Config extends \WP_REST_Controller {
 		$currentPage = $request->get_param( 'currentPage' ) ?? 1;
 
 		$attributes = $this->get_attributes_from_request_params( $request->get_params() );
-
-		$container = Ioc_Container::getInstance();
 
 		$response_data = ( new Product( new Product_Query( $product ) ) )
 			->getProducVariationsByFilter( $attributes, $currentPage )
