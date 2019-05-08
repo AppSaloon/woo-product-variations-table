@@ -2,8 +2,6 @@
 
 namespace woo_pvt\model;
 
-use woo_pvt\config\Rest_Endpoint_Config;
-
 class Product_Query {
 
 	/** @var \wpdb */
@@ -100,7 +98,7 @@ class Product_Query {
 
 		$query = "SELECT " . $this->select_group_concat_filter_attributes( $attributes ) . "
 				  FROM " . $this->wpdb->posts . "
-				  " . $this->inner_join_filter_attributes( $innerJoinArray ) . "
+				  " . $this->left_join_filter_attributes( $innerJoinArray ) . "
 				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation' ";
 
@@ -196,11 +194,13 @@ class Product_Query {
 	public function queryVariationsByFilter( $filterAttributes, $attributesOrder, $currentPage, $perPage ) {
 		$query = "SELECT ID" . $this->select_filter_attributes( $filterAttributes ) . "
 				  FROM " . $this->wpdb->posts . "
-				  " . $this->inner_join_filter_attributes( $filterAttributes ) . "
+				  " . $this->left_join_filter_attributes( $filterAttributes ) . "
 				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation' "
 		         . $this->sort( $attributesOrder )
 		         . $this->limit( $currentPage, $perPage );
+
+		//echo print_r( $query, true );
 
 		return $this->wpdb->get_results( $query ) ?? array();
 	}
@@ -236,7 +236,7 @@ class Product_Query {
 	public function queryTotalVariations( $filterAttributes ) {
 		$query = "SELECT count(*) as max
 				  FROM " . $this->wpdb->posts . "
-				  " . $this->inner_join_filter_attributes( $filterAttributes ) . "
+				  " . $this->left_join_filter_attributes( $filterAttributes ) . "
 				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation'";
 
@@ -258,6 +258,8 @@ class Product_Query {
 		$select = '';
 
 		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
+			$attribute_key = str_replace('-', '_', $attribute_key);
+
 			$select .= ", table_$attribute_key.meta_value as $attribute_key";
 		}
 
@@ -277,6 +279,8 @@ class Product_Query {
 		$select = '';
 
 		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
+			$attribute_key = str_replace('-', '_', $attribute_key);
+
 			$select .= "GROUP_CONCAT( DISTINCT( table_$attribute_key.meta_value ) ) as $attribute_key, ";
 		}
 
@@ -291,17 +295,20 @@ class Product_Query {
 	 * @return string
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.5
 	 */
-	private function inner_join_filter_attributes( $filterAttributes ) {
+	private function left_join_filter_attributes( $filterAttributes ) {
 		$inner_join = '';
 
 		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
-			$inner_join .= " INNER JOIN " . $this->wpdb->postmeta . " as table_$attribute_key 
-			ON table_$attribute_key.post_id = ID 
-			AND table_$attribute_key.meta_key = '" . $attribute_key . "' ";
+			$key = str_replace('-', '_', $attribute_key);
+
+			$inner_join .= " LEFT JOIN " . $this->wpdb->postmeta . " as table_$key 
+			ON table_$key.post_id = ID 
+			AND table_$key.meta_key = '" . $attribute_key . "' ";
 
 			if ( $attribute_value !== false && ! is_array( $attribute_value ) ) {
-				$inner_join .= "AND table_$attribute_key.meta_value = '" . $attribute_value . "' ";
+				$inner_join .= "AND table_$key.meta_value = '" . $attribute_value . "' ";
 			}
 		}
 
@@ -316,7 +323,7 @@ class Product_Query {
 	 * @return string
 	 *
 	 * @since 1.0.0
-	 * @version 1.0.1
+	 * @version 1.0.5
 	 */
 	private function sort( array $filterAttributes ) {
 		if ( count( $filterAttributes ) == 0 ) {
@@ -333,6 +340,8 @@ class Product_Query {
 		$sort = " ORDER BY  ";
 
 		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
+			$attribute_key = str_replace('-', '_', $attribute_key);
+
 			if ( in_array( $attribute_key, $decimal ) ) {
 				$sort .= "CAST(table_{$attribute_key}.meta_value as DECIMAL),";
 			} else {

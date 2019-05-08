@@ -141,13 +141,14 @@ class Product {
 	 * @return array
 	 *
 	 * @since 1.0.0
+	 * @version 1.0.5
 	 */
 	public function getJson() {
 		return array(
 			'attributes'     => $this->attributes,
 			'variations'     => $this->variations,
 			'currentPage'    => $this->currentPage,
-			'totalPages'     => ceil( $this->totalVariations / $this->perPage ),
+			'totalPages'     => floor( $this->totalVariations / $this->perPage ),
 			'showFilter'     => ( get_option( 'woo_product_variations_table_show_attributes',
 					false ) == '1' )
 				? true
