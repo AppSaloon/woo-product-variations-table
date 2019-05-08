@@ -98,7 +98,7 @@ class Product_Query {
 
 		$query = "SELECT " . $this->select_group_concat_filter_attributes( $attributes ) . "
 				  FROM " . $this->wpdb->posts . "
-				  " . $this->left_join_filter_attributes( $innerJoinArray ) . "
+				  " . $this->inner_join_filter_attributes( $innerJoinArray ) . "
 				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation' ";
 
@@ -194,7 +194,7 @@ class Product_Query {
 	public function queryVariationsByFilter( $filterAttributes, $attributesOrder, $currentPage, $perPage ) {
 		$query = "SELECT ID" . $this->select_filter_attributes( $filterAttributes ) . "
 				  FROM " . $this->wpdb->posts . "
-				  " . $this->left_join_filter_attributes( $filterAttributes ) . "
+				  " . $this->inner_join_filter_attributes( $filterAttributes ) . "
 				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation' "
 		         . $this->sort( $attributesOrder )
@@ -236,7 +236,7 @@ class Product_Query {
 	public function queryTotalVariations( $filterAttributes ) {
 		$query = "SELECT count(*) as max
 				  FROM " . $this->wpdb->posts . "
-				  " . $this->left_join_filter_attributes( $filterAttributes ) . "
+				  " . $this->inner_join_filter_attributes( $filterAttributes ) . "
 				  WHERE post_parent = " . $this->product->get_id() . " 
 				  AND post_type='product_variation'";
 
@@ -297,13 +297,13 @@ class Product_Query {
 	 * @since 1.0.0
 	 * @version 1.0.5
 	 */
-	private function left_join_filter_attributes( $filterAttributes ) {
+	private function inner_join_filter_attributes( $filterAttributes ) {
 		$inner_join = '';
 
 		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
 			$key = str_replace('-', '_', $attribute_key);
 
-			$inner_join .= " LEFT JOIN " . $this->wpdb->postmeta . " as table_$key 
+			$inner_join .= " INNER JOIN " . $this->wpdb->postmeta . " as table_$key 
 			ON table_$key.post_id = ID 
 			AND table_$key.meta_key = '" . $attribute_key . "' ";
 
