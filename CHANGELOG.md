@@ -2,6 +2,9 @@
 
 ## History of changes
 
+### 20-05-2019 - v1.0.7
+* Bug fix, fix pagination + sql query order type (decimal instead of string)
+
 ### 08-04-2019 - v1.0.6
 * Bug fix, change left join by inner join
 

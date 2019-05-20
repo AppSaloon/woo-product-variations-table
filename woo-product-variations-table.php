@@ -10,9 +10,9 @@ Domain Path: /languages/
 Tags: woocommerce, product variations, list of product variations, filter product variations
 Requires PHP: 7.0
 Requires at least: 5.0
-Tested up to: 5.1.1
-Stable tag: 1.0.6
-Version: 1.0.6
+Tested up to: 5.2
+Stable tag: 1.0.7
+Version: 1.0.7
 */
 
 namespace woo_pvt;
@@ -36,7 +36,7 @@ define( 'WOO_PVT_BASE_NAME', dirname( plugin_basename( __FILE__ ) ) );
 /**
  * Plugin version
  */
-define( 'WOO_PVT_VERSION', '1.0.6' );
+define( 'WOO_PVT_VERSION', '1.0.7' );
 
 /**
  * Rest API namespace
