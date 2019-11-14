@@ -2,6 +2,9 @@
 
 ## History of changes
 
+### 14-11-2019 - v1.0.9
+* Fix attributes
+
 ### 20-05-2019 - v1.0.8
 * Bug fix, fix pagination
 
