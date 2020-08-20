@@ -122,6 +122,6 @@ class Show_Product_Variations_Table {
 
 		$apiEndPoint = Product::getApiEndpoint() . $productId;
 
-		echo "<div id='variations-table' class='variations-table' data-initial-data='" . $initialDataEncoded . "' data-add-to-cart-url='/wp/wp-admin/admin-ajax.php?add_variation_to_cart=1' data-api-endpoint='" . $apiEndPoint . "' data-product-id='" . $productId . "' >test</div>";
+		echo "<div id='variations-table' class='variations-table' data-initial-data='" . $initialDataEncoded . "' data-add-to-cart-url='/core/wp-admin/admin-ajax.php?add_variation_to_cart=1' data-api-endpoint='" . $apiEndPoint . "' data-product-id='" . $productId . "' >test</div>";
 	}
 }
