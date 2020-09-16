@@ -2,6 +2,9 @@
 
 ## History of changes
 
+### 16-11-2019 - v1.1.0
+* Remove transient after product update
+
 ### 14-11-2019 - v1.0.9
 * Fix attributes
 

@@ -7,6 +7,8 @@ use woo_pvt\model\Product_Query;
 
 class Show_Product_Variations_Table {
 
+	CONST PRODUCT_TRANSIENT_KEY = 'product-variations-inital-data-';
+
 	public function register_product_variations_table() {
 		add_action( 'plugins_loaded', array( $this, 'remove_variable_product_add_to_cart' ) );
 		add_filter( 'woocommerce_after_single_product_summary', array( $this, 'show_product_variations' ), 9 );
@@ -107,7 +109,7 @@ class Show_Product_Variations_Table {
 		}
 
 		$productId          = $product->get_id();
-		$transientId        = "product-variations-inital-data-" . $productId;
+		$transientId        = static::PRODUCT_TRANSIENT_KEY . $productId;
 		$initialDataEncoded = get_transient( $transientId );
 
 		if ( $initialDataEncoded === false ) {
