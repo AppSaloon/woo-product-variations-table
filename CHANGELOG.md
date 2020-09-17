@@ -2,6 +2,9 @@
 
 ## History of changes
 
+### 17-07-2020 - v1.1.1
+* styling updates
+
 ### 16-11-2019 - v1.1.0
 * Remove transient after product update
 
