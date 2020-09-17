@@ -48,10 +48,6 @@
     width: 90px;
 }
 
-#variations table.variations input.qty {
-    width: 60px;
-}
-
 #variations table.variations th.sku {
     width: 150px;
 }
@@ -84,7 +80,7 @@
 #variations table.variations td {
     display: table-cell;
     border: #eee solid 1px;
-    padding: 10px;
+    padding: 0;
     vertical-align: middle;
 }
 
@@ -120,10 +116,10 @@
 
 #variations input,
 #variations select{
-    border-radius: 0;
-    border: solid #eee 1px;
+    border: none;
     padding: 5px;
-    height: 2.5em;
+    width: 100%;
+    height: unset;
 }
 
 @media screen and (max-width: 767px) {
