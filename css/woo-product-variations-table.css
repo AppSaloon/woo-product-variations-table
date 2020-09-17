@@ -1,6 +1,7 @@
 .variations-table {
     clear: both;
     margin-bottom: 10px;
+    position: relative;
 }
 
 #variations .filters,
@@ -25,13 +26,28 @@
     display: inline-block;
 }
 
+#variations table.variations td,
+#variations table.variations th {
+    background-color: white;
+    border: #eee solid 1px;
+}
+
 #variations table.variations th {
     cursor: pointer;
-    white-space: nowrap;
-    display: table-cell;
-    border: #eee solid 1px;
     padding: 10px;
+    display: table-cell;
     vertical-align: middle;
+    white-space: nowrap;
+}
+
+#variations table.variations th::after {
+    content: "";
+    background-color: #eee;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
 }
 
 #variations table.variations th.image_link {
@@ -120,6 +136,7 @@
     padding: 5px;
     width: 100%;
     height: unset;
+    background-color: unset;
 }
 
 @media screen and (max-width: 767px) {
