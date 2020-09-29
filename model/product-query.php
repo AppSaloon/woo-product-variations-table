@@ -217,7 +217,7 @@ class Product_Query {
 	/**
 	 * @return mixed
 	 *
-	 * @since 1.1.1
+	 * @since 1.1.2
 	 */
 	public function queryAttributesOrder() {
 		$keys = $this->product->get_attributes();
