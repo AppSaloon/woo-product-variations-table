@@ -11,8 +11,8 @@ Tags: woocommerce, product variations, list of product variations, filter produc
 Requires PHP: 7.0
 Requires at least: 5.0
 Tested up to: 5.5
-Stable tag: 1.1.0
-Version: 1.1.0
+Stable tag: 1.1.1
+Version: 1.1.1
 */
 
 namespace woo_pvt;
@@ -36,7 +36,7 @@ define( 'WOO_PVT_BASE_NAME', dirname( plugin_basename( __FILE__ ) ) );
 /**
  * Plugin version
  */
-define( 'WOO_PVT_VERSION', '1.0.9' );
+define( 'WOO_PVT_VERSION', '1.1.1' );
 
 /**
  * Rest API namespace

@@ -217,14 +217,20 @@ class Product_Query {
 	/**
 	 * @return mixed
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.1
 	 */
 	public function queryAttributesOrder() {
 		$keys = $this->product->get_attributes();
 
 		if ( is_array( $keys ) ) {
 			foreach ( $keys as $k => $v ) {
-				$keys[ 'attribute_' . $k ] = array();
+				/**
+				 * @var $v \WC_Product_Attribute
+				 */
+				if( $v->get_variation() ) {
+					$keys[ 'attribute_' . $k ] = array();
+				}
+
 				unset( $keys[ $k ] );
 			}
 		}

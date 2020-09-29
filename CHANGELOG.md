@@ -2,6 +2,9 @@
 
 ## History of changes
 
+### 29-09-2020 - v1.1.1
+* Fix pull only attributes for variations
+
 ### 16-11-2019 - v1.1.0
 * Remove transient after product update
 
