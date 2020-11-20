@@ -211,7 +211,9 @@ class Product_Query {
 		         . $this->sort( $attributesOrder )
 		         . $this->limit( $currentPage, $perPage );
 
-		return $this->wpdb->get_results( $query ) ?? array();
+		$result = $this->wpdb->get_results( $query ) ?? array();
+
+		return $result;
 	}
 
 	/**
@@ -263,19 +265,18 @@ class Product_Query {
 	/**
 	 * Build select listing for the filter attributes
 	 *
-	 * @param $filterAttributes array
+	 * @param $filter_attributes array
 	 *
 	 * @return string
 	 *
 	 * @since 1.0.0
 	 */
-	private function select_filter_attributes( $filterAttributes ) {
+	private function select_filter_attributes( $filter_attributes ) {
 		$select = '';
 
-		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
-			$attribute_key_manipulated = str_replace( '-', '_', $attribute_key );
-
-			$select .= ", table_$attribute_key_manipulated.meta_value as '$attribute_key'";
+		foreach ( array_keys( $filter_attributes ) as $attribute_key ) {
+			$select .= ", table_$attribute_key.meta_value as '$attribute_key'";
+			$select .= ", {$attribute_key}_terms.name as '{$attribute_key}_value'";
 		}
 
 		return $select;
@@ -305,26 +306,36 @@ class Product_Query {
 	/**
 	 * Add attributes to FROM QUERY
 	 *
-	 * @param $filterAttributes array
+	 * @param $filter_attributes array
 	 *
 	 * @return string
 	 *
 	 * @since 1.0.0
 	 * @version 1.0.5
 	 */
-	private function inner_join_filter_attributes( $filterAttributes ) {
+	private function inner_join_filter_attributes( $filter_attributes ) {
 		$inner_join = '';
 
-		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
-			$key = str_replace( '-', '_', $attribute_key );
+		foreach ( $filter_attributes as $key => $attribute_value ) {
+			$short_key = str_replace( 'attribute_', '', $key );
 
-			$inner_join .= " INNER JOIN " . $this->wpdb->postmeta . " as table_$key 
+			$inner_join .= ' INNER JOIN ' . $this->wpdb->postmeta . " as table_$key 
 			ON table_$key.post_id = ID 
-			AND table_$key.meta_key = '" . $attribute_key . "' ";
+			AND table_$key.meta_key = '" . $key . "' ";
+
+
 
 			if ( $attribute_value !== false && ! is_array( $attribute_value ) ) {
 				$inner_join .= "AND table_$key.meta_value = '" . $attribute_value . "' ";
 			}
+
+			$inner_join .= " INNER JOIN `wp_terms` AS {$key}_terms ON {$key}_terms.slug = table_${key}.meta_value
+				AND {$key}_terms.term_id IN (
+					SELECT term_id FROM wp_term_taxonomy
+					WHERE wp_term_taxonomy.taxonomy = '{$short_key}'
+					AND wp_term_taxonomy.term_id = {$key}_terms.term_id
+				)
+			";
 		}
 
 		return $inner_join;
@@ -345,65 +356,10 @@ class Product_Query {
 			return '';
 		}
 
-		$decimal = array(
-			'attribute_pa_d',
-			'attribute_pa_h',
-			'attribute_pa_h1',
-			'attribute_pa_wallthickness',
-			'attribute_pa_sw',
-			'attribute_pa_t',
-			'attribute_pa_tube-case',
-			'attribute_pa_type-zo',
-			'attribute_pa_wire',
-			'attribute_pa_wire-length',
-			'attribute_pa_wire-nut',
-			'attribute_pa_wiredepth',
-			'attribute_pa_ww',
-			'attribute_pa_l',
-			'attribute_pa_l1',
-			'attribute_pa_length',
-			'attribute_pa_max-basc',
-			'attribute_pa_metrische-schroefdraad',
-			'attribute_pa_nuts',
-			'attribute_pa_o',
-			'attribute_pa_pipe',
-			'attribute_pa_pipsize',
-			'attribute_pa_productcode',
-			'attribute_pa_2-x-r',
-			'attribute_pa_a',
-			'attribute_pa_b',
-			'attribute_pa_c',
-			'attribute_pa_c-mm',
-			'attribute_pa_case',
-			'attribute_pa_d-mm',
-			'attribute_pa_d1-mm',
-			'attribute_pa_d2',
-			'attribute_pa_d2-mm',
-			'attribute_pa_e',
-			'attribute_pa_foot',
-			'attribute_pa_external-size',
-			'attribute_pa_hmm',
-			'attribute_pa_hoek',
-			'attribute_pa_hoh',
-			'attribute_pa_innerwire',
-			'attribute_pa_r',
-			'attribute_pa_rgr-wall-thickness',
-			'attribute_pa_shis',
-			'attribute_pa_shore',
-			'attribute_pa_spoed',
-		);
-
 		$sort = " ORDER BY  ";
 
-		foreach ( $filterAttributes as $attribute_key => $attribute_value ) {
-			$attribute_key = str_replace( '-', '_', $attribute_key );
-
-			if ( in_array( $attribute_key, $decimal ) ) {
-				$sort .= "CAST(table_{$attribute_key}.meta_value as DECIMAL),";
-			} else {
-				$sort .= "table_{$attribute_key}.meta_value,";
-			}
-
+		foreach ( array_keys( $filterAttributes ) as $attribute_key ) {
+			$sort .= "CAST({$attribute_key}_value as DEC),";
 		}
 
 		$sort = substr( $sort, 0, - 1 );
