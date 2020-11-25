@@ -229,7 +229,7 @@ class Product_Query {
 				/**
 				 * @var $v \WC_Product_Attribute
 				 */
-				if( $v->get_variation() ) {
+				if ( $v->get_variation() ) {
 					$keys[ 'attribute_' . $k ] = array();
 				}
 
@@ -270,13 +270,16 @@ class Product_Query {
 	 * @return string
 	 *
 	 * @since 1.0.0
+	 * @version 1.1.4
 	 */
 	private function select_filter_attributes( $filter_attributes ) {
 		$select = '';
 
 		foreach ( array_keys( $filter_attributes ) as $attribute_key ) {
-			$select .= ", table_$attribute_key.meta_value as '$attribute_key'";
-			$select .= ", {$attribute_key}_terms.name as '{$attribute_key}_value'";
+			$manipulated_key = str_replace( '-', '_', $attribute_key );
+
+			$select .= ", table_$manipulated_key.meta_value as '$attribute_key'";
+			$select .= ", {$manipulated_key}_terms.name as '{$attribute_key}_value'";
 		}
 
 		return $select;
@@ -290,6 +293,7 @@ class Product_Query {
 	 * @return string
 	 *
 	 * @since 1.0.0
+	 * @version 1.1.4
 	 */
 	private function select_group_concat_filter_attributes( $filterAttributes ) {
 		$select = '';
@@ -311,18 +315,19 @@ class Product_Query {
 	 * @return string
 	 *
 	 * @since 1.0.0
-	 * @version 1.0.5
+	 * @version 1.1.4
 	 */
 	private function inner_join_filter_attributes( $filter_attributes ) {
 		$inner_join = '';
 
 		foreach ( $filter_attributes as $key => $attribute_value ) {
 			$short_key = str_replace( 'attribute_', '', $key );
+			$key_meta_key = $key;
+			$key       = str_replace( '-', '_', $key );
 
 			$inner_join .= ' INNER JOIN ' . $this->wpdb->postmeta . " as table_$key 
 			ON table_$key.post_id = ID 
-			AND table_$key.meta_key = '" . $key . "' ";
-
+			AND table_$key.meta_key = '" . $key_meta_key . "' ";
 
 
 			if ( $attribute_value !== false && ! is_array( $attribute_value ) ) {
@@ -349,7 +354,7 @@ class Product_Query {
 	 * @return string
 	 *
 	 * @since 1.0.0
-	 * @version 1.0.5
+	 * @version 1.1.4
 	 */
 	private function sort( array $filterAttributes ) {
 		if ( count( $filterAttributes ) == 0 ) {
@@ -359,7 +364,7 @@ class Product_Query {
 		$sort = " ORDER BY  ";
 
 		foreach ( array_keys( $filterAttributes ) as $attribute_key ) {
-			$sort .= "CAST({$attribute_key}_value as DEC),";
+			$sort .= "CAST(`{$attribute_key}_value` as DEC),";
 		}
 
 		$sort = substr( $sort, 0, - 1 );
