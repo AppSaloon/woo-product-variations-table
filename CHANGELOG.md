@@ -2,6 +2,12 @@
 
 ## History of changes
 
+[Unreleased - #refact/TR95-plugin-php-di-dependency-conflicts] - 30/08/2021
+## Changed
+- Refactored autoloader
+## Removed
+- Deleted PHP IoC
+
 ### 29-09-2020 - v1.1.2
 * Fix pull only attributes for variations
 
