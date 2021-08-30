@@ -15,13 +15,12 @@ Stable tag: 1.1.4
 Version: 1.1.4
 */
 
-namespace woo_pvt;
-
-use woo_pvt\lib\Ioc_Container_Interface;
-use woo_pvt\lib\Ioc_Container;
+use appsaloon\woo_pvt\config\Plugin_Config;
+use appsaloon\woo_pvt\config\Rest_Endpoint_Config;
+use appsaloon\woo_pvt\config\Show_Product_Variations_Table;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 } // Exit if accessed directly
 
 /**
@@ -36,7 +35,7 @@ define( 'WOO_PVT_BASE_NAME', dirname( plugin_basename( __FILE__ ) ) );
 /**
  * Plugin version
  */
-define( 'WOO_PVT_VERSION', '1.1.4');
+define( 'WOO_PVT_VERSION', '1.1.4' );
 
 /**
  * Rest API namespace
@@ -46,42 +45,33 @@ define( 'WOO_PVT_REST_API_NAMESPACE', 'woo-pvt' );
 /**
  * Register autoloader to load files/classes dynamically
  */
-include_once WOO_PVT_DIR . 'lib/autoloader.php';
+include_once WOO_PVT_DIR . 'vendor/autoload.php';
 
 /**
  * Register global functions
  */
-include_once WOO_PVT_DIR . 'lib/helper.php';
+include_once WOO_PVT_DIR . 'src/lib/helper.php';
 
 /**
- * Load composer
- *
- * "php-di/php-di": "5.0"
- */
-include_once WOO_PVT_DIR . 'lib/ioc/autoload.php';
-
-/**
- * Class Appsaloon_Plugin_Controller
+ * Class Woo_Product_Variatons_Table
  * @package apc
  */
-class Premium_Plugin_Controller {
+class Woo_Product_Variatons_Table {
 
-    /**
-     * Appsaloon_Plugin_Controller constructor.
-     *
-     * @param Ioc_Container_Interface $container
-     *
-     * @since 1.0.0
-     */
-    public function __construct( Ioc_Container_Interface $ioc_container ) {
-        $ioc_container->container->get('plugin_config')->register_plugin_settings();
-        $ioc_container->container->get('rest_endpoint_config')->register_routes();
-        $ioc_container->container->get('show_product_variations_table')->register_product_variations_table();
-    }
+	/**
+	 * Woo_Product_Variatons_Table constructor.
+	 *
+	 * @since 1.0.0
+	 */
+	public function __construct() {
+		( new Plugin_Config() )->register_plugin_settings();
+		( new Rest_Endpoint_Config() )->register_routes();
+		( new Show_Product_Variations_Table() )->register_product_variations_table();
+	}
 
 }
 
 /**
  * Initiate the cookiebot addons framework plugin
  */
-new Premium_Plugin_Controller( Ioc_Container::getInstance() );
+new Woo_Product_Variatons_Table();
