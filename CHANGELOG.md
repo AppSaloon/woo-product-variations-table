@@ -2,6 +2,11 @@
 
 ## History of changes
 
+## [1.2.1] - 06/09/2021
+### Fixed
+- Fixed assets path
+- Fixed comments
+
 ## [1.2.0] - 30/08/2021
 ### Changed
 - Refactored autoloader
