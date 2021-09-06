@@ -2,48 +2,60 @@
 
 ## History of changes
 
-[Unreleased - #refact/TR95-plugin-php-di-dependency-conflicts] - 30/08/2021
-## Changed
+## [1.2.0] - 30/08/2021
+### Changed
 - Refactored autoloader
-## Removed
+### Removed
 - Deleted PHP IoC
 
-### 29-09-2020 - v1.1.2
+## [1.1.2] - 29-09-2020
+### Fixed
 * Fix pull only attributes for variations
 
-### 17-07-2020 - v1.1.1
+## [1.1.1] - 17-07-2020
+### Changed
 * styling updates
 
-### 16-11-2019 - v1.1.0
+## [1.1.0] - 16-11-2019
+### Changed
 * Remove transient after product update
 
-### 14-11-2019 - v1.0.9
+## [1.0.9] - 14-11-2019
+### Fixed
 * Fix attributes
 
-### 20-05-2019 - v1.0.8
+## [1.0.8] - 20-05-2019
+### Fixed
 * Bug fix, fix pagination
 
-### 20-05-2019 - v1.0.7
+## [1.0.7] - 20-05-2019
+### Fixed
 * Bug fix, sql query order type (decimal instead of string)
 
-### 08-04-2019 - v1.0.6
+## [1.0.6] - 08-04-2019
+### Fixed
 * Bug fix, change left join by inner join
 
-### 07-04-2019 - v1.0.5
+## [1.0.5] - 07-04-2019
+### Fixed
 * Bug fix
 
-### 07-04-2019 - v1.0.4
+## [1.0.4] - 07-04-2019
+### Fixed
 * Bug fix
 
-### 07-04-2019 - v1.0.3
+## [1.0.3] - 07-04-2019
+### Fixed
 * Bug fix
 
-### 07-04-2019 - v1.0.2
+## [1.0.2] - 07-04-2019
+### Fixed
 * Bug fix
 
-#### 23-04-2019 - v1.0.1
+#### [1.0.1] - 23-04-2019
+### Fixed
 * Bug fix, allow the variations code for only variable product
 * Bug fix, Add sort parameter to the query when there is an attribute
 
-#### 23-04-2019 - v1.0.0
+#### [1.0.0] - 23-04-2019
 * Release
