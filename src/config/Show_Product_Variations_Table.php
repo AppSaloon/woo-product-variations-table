@@ -82,12 +82,12 @@ class Show_Product_Variations_Table {
 	public function variations_table_scripts() {
 		if ( is_product() ) {
 			wp_enqueue_script( 'woo-product-variations-table-style',
-				WOO_PVT_URL . 'js/woo-product-variations-table.js',
+				WOO_PVT_URL . 'assets/js/woo-product-variations-table.js',
 				array(),
 				WOO_PVT_VERSION,
 				true );
 			wp_enqueue_style( 'woo-product-variations-table-style',
-				WOO_PVT_URL . 'css/woo-product-variations-table.css',
+				WOO_PVT_URL . 'assets/css/woo-product-variations-table.css',
 				array(),
 				WOO_PVT_VERSION );
 		}
