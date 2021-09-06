@@ -72,6 +72,6 @@ class Woo_Product_Variatons_Table {
 }
 
 /**
- * Initiate the cookiebot addons framework plugin
+ * Initiate the Woo_Product_Variatons_Table
  */
 new Woo_Product_Variatons_Table();
